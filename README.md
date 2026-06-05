@@ -1,4 +1,4 @@
-# no_genie_website
+# NoGenie.com
 This website is a paraody of the transition of the change of https://www.mathsgenie.co.uk/ to https://yesgenie.com/ and its transition to AI usage.
 This change has been seen in a negative light by many, including myself - hence this website.
 
