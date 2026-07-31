@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GCSE results day countdown</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color-scheme: light dark;
+      background-color: light-dark(#f9fafb, #030712);
+      color: light-dark(#1f2937, #f9fafb);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: background-color 0.3s ease;
+    }
+
+    a {
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .site-header {
+      width: 100%;
+      border-bottom: 1px solid light-dark(#e2e8f0, #1e293b);
+      background-color: light-dark(rgba(255, 255, 255, 0.8), rgba(15, 23, 42, 0.8));
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .header-container {
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 80rem;
+      height: 4rem; 
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    @media (min-width: 640px) { .header-container { padding-left: 1.5rem; padding-right: 1.5rem; } }
+    @media (min-width: 1024px) { .header-container { padding-left: 2rem; padding-right: 2rem; } }
+
+    .header-branding {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+      tracking-letter: -0.025em;
+      letter-spacing: -0.025em;
+    }
+
+    .hit-counter-wrapper {
+      display: flex;
+      align-items: center;
+      height: 1.25rem; 
+    }
+
+    .hit-counter-img {
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .header-nav {
+      display: none;
+    }
+
+    @media (min-width: 768px) {
+      .header-nav {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+    }
+
+    .nav-link {
+      color: light-dark(#475569, #cbd5e1);
+    }
+
+    .nav-link:hover {
+      color: light-dark(#4f46e5, #818cf8);
+    }
+    .page-main-content {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1rem;
+    }
+
+    .launch-countdown-root {
+      width: 100%;
+      max-width: 56rem; /* 896px equalling max-w-4xl */
+      padding: 2.5rem 2rem;
+      text-align: center;
+      background-color: light-dark(#ffffff, #111827);
+      border: 1px solid light-dark(#f3f4f6, #1f2937);
+      border-radius: 1.5rem;
+      box-shadow: light-dark(
+        0 20px 25px -5px rgba(0, 0, 0, 0.05), 
+        0 20px 25px -5px rgba(0, 0, 0, 0.4)
+      );
+    }
+
+    .launch-countdown-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: light-dark(#1f2937, #f9fafb);
+      margin-bottom: 2rem;
+      letter-spacing: -0.025em;
+      line-height: 1.25;
+    }
+
+    @media (min-width: 768px) { .launch-countdown-title { font-size: 1.875rem; } }
+
+    .launch-countdown-flex-row {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      justify-content: center;
+      align-items: stretch;
+    }
+
+    @media (min-width: 640px) {
+      .launch-countdown-flex-row {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+      }
+    }
+
+    .launch-countdown-card {
+      background-color: light-dark(#f9fafb, #1f2937);
+      border: 1px solid light-dark(rgba(243, 244, 246, 0.5), rgba(31, 41, 55, 0.5));
+      border-radius: 1rem;
+      padding: 1rem 1.5rem;
+      display: flex;
+      flex-direction: row;        
+      align-items: baseline;     
+      justify-content: space-between; 
+      gap: 1rem;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    @media (min-width: 640px) {
+      .launch-countdown-card {
+        flex: 1;                 
+        flex-direction: column;  
+        align-items: center;
+        justify-content: center;
+        padding: 1.25rem 1rem;
+      }
+    }
+
+    .launch-countdown-divider {
+      display: none; 
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: light-dark(#d1d5db, #4b5563);
+      padding-bottom: 1.5rem; 
+    }
+
+    @media (min-width: 640px) { .launch-countdown-divider { display: inline-block; } }
+
+    .launch-countdown-num {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 2.25rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    @media (min-width: 768px) { .launch-countdown-num { font-size: 3rem; } }
+
+    .num-indigo { color: light-dark(#4f46e5, #818cf8); }
+    .num-rose { color: light-dark(#e11d48, #fb7185); }
+
+    .launch-countdown-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: light-dark(#6b7280, #9ca3af);
+    }
+
+    @media (min-width: 640px) { .launch-countdown-label { margin-top: 0.5rem; } }
+
+    .launch-countdown-expired-msg {
+      display: none; 
+      padding: 2rem 1rem;
+      background-color: light-dark(#f0fdf4, rgba(22, 101, 52, 0.05));
+      border: 2px dashed light-dark(#bbf7d0, #15803d);
+      border-radius: 1rem;
+      animation: fadeInEffect 0.6s ease-out forwards;
+    }
+
+    .launch-countdown-expired-msg h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: light-dark(#166534, #4ade80);
+      margin-bottom: 0.5rem;
+    }
+
+    .launch-countdown-expired-msg p {
+      font-size: 1rem;
+      color: light-dark(#475569, #9ca3af);
+    }
+
+    @keyframes fadeInEffect {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+
+
+    .site-footer {
+      background-color: light-dark(#ffffff, #0f172a);
+      border-top: 1px solid light-dark(#e5e7eb, #1e293b);
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+      width: 100%;
+    }
+
+    .footer-container {
+      max-width: 80rem; /* 1280px equalling max-w-7xl */
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 2.5rem; /* equalling px-10 */
+      padding-right: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    @media (min-width: 640px) {
+      .footer-container {
+        flex-direction: row;
+      }
+    }
+
+    .footer-text {
+      font-size: 0.875rem;
+      color: light-dark(#6b7280, #9ca3af);
+    }
+
+    .footer-links-group {
+      display: flex;
+      column-gap: 1.5rem;
+    }
+
+    .footer-link {
+      font-size: 0.875rem;
+      color: light-dark(#6b7280, #9ca3af);
+    }
+
+    .footer-link:hover {
+      color: light-dark(#4f46e5, #818cf8); /* Custom value pairing for accent */
+    }
+  </style>
+</head>
+  <header class="site-header">
+    <div class="header-container">
+      <div class="header-branding">
+        <span>NoGenie</span>
+        <div class="hit-counter-wrapper">
+          <img src="https://hitscounter.dev/api/hit?url=https%3A%2F%2Fnogenie.com%2F&label=Website+visit+counter&icon=people-fill&color=%239ec5fe&message=&style=social&tz=Europe%2FLondon" alt="Hit Counter" class="hit-counter-img" />
+        </div>
+      </div>
+      <nav class="header-nav">
+        <a href="index.html" class="nav-link">Homepage</a>
+      </nav>
+    </div>
+  </header>
+  <main class="page-main-content" style="padding: 1rem; max-height: 500px; margin: auto 0;">
+    <div class="launch-countdown-root">
+      <h1 id="countdown-main-heading" class="launch-countdown-title">GCSE results day starts in:</h1>
+      <div id="countdown-live-row" class="launch-countdown-flex-row">
+        <div class="launch-countdown-card">
+          <span id="raw-days" class="launch-countdown-num num-indigo">00</span>
+          <span class="launch-countdown-label">Days</span>
+        </div>
+
+        <div class="launch-countdown-divider">:</div>
+
+        <div class="launch-countdown-card">
+          <span id="raw-hours" class="launch-countdown-num num-indigo">00</span>
+          <span class="launch-countdown-label">Hours</span>
+        </div>
+
+        <div class="launch-countdown-divider">:</div>
+
+        <div class="launch-countdown-card">
+          <span id="raw-minutes" class="launch-countdown-num num-indigo">00</span>
+          <span class="launch-countdown-label">Minutes</span>
+        </div>
+
+        <div class="launch-countdown-divider">:</div>
+
+        <div class="launch-countdown-card">
+          <span id="raw-seconds" class="launch-countdown-num num-indigo">00</span>
+          <span class="launch-countdown-label">Seconds</span>
+        </div>
+
+        <div class="launch-countdown-divider">:</div>
+
+        <div class="launch-countdown-card">
+          <span id="raw-ms" class="launch-countdown-num num-rose">000</span>
+          <span class="launch-countdown-label">Ms</span>
+        </div>
+      </div>
+
+      <div id="countdown-expired-panel" class="launch-countdown-expired-msg">
+        <h2>It is GCSE results day!</h2>
+        <p>The suspense is over! You can now rest easy knowing how well you did.<br>Remember if you don't meet the entry requirement for your course(s) of choice there are other options.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    (function() {
+      const targetDate = new Date('2026-08-20T08:00:00+01:00');
+
+      // Bind node objects
+      const headingEl = document.getElementById('countdown-main-heading');
+      const liveRowEl = document.getElementById('countdown-live-row');
+      const expiredPanelEl = document.getElementById('countdown-expired-panel');
+
+      const elDays = document.getElementById('raw-days');
+      const elHours = document.getElementById('raw-hours');
+      const elMinutes = document.getElementById('raw-minutes');
+      const elSeconds = document.getElementById('raw-seconds');
+      const elMs = document.getElementById('raw-ms');
+
+      function updateCountdown() {
+        const timeRemaining = targetDate - new Date();
+
+        if (timeRemaining <= 0) {
+          liveRowEl.style.display = 'none';
+          headingEl.style.display = 'none';
+          expiredPanelEl.style.display = 'block';
+          return;
+        }
+
+        const days = Math.floor(timeRemaining / 86400000);
+        const hours = Math.floor((timeRemaining % 86400000) / 3600000);
+        const minutes = Math.floor((timeRemaining % 3600000) / 60000);
+        const seconds = Math.floor((timeRemaining % 60000) / 1000);
+        const ms = Math.floor(timeRemaining % 1000);
+
+        elDays.textContent = String(days).padStart(2, '0');
+        elHours.textContent = String(hours).padStart(2, '0');
+        elMinutes.textContent = String(minutes).padStart(2, '0');
+        elSeconds.textContent = String(seconds).padStart(2, '0');
+        elMs.textContent = String(ms).padStart(3, '0');
+
+        requestAnimationFrame(updateCountdown);
+      }
+
+      requestAnimationFrame(updateCountdown);
+    })();
+  </script>
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p class="footer-text">Results collection time may vary depending on your school or exam centre.<br> It is your responsibility to be on time for results day.</p>
+      <p class="footer-text">I am working on dark mode for the landing page. Sorry for the harsh brightness changes.</p>
+      <div class="footer-links-group">
+        <a href="https://github.com/Efficient-Leading-25/no_genie_website" class="footer-link">Source code (github.com)</a>
+        <a href="https://github.com/Efficient-Leading-25/no_genie_website/blob/main/LICENSE" class="footer-link">Licensed under GPL-3.0 (github.com)</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
